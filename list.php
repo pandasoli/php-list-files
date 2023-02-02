@@ -5,19 +5,26 @@
     <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
     <?php
         $program_name = basename(__FILE__);
-        $mode = isset( $_GET['mode'] ) ? $_GET['mode'] : 'light';
+        $theme = isset( $_GET['theme'] ) ? $_GET['theme'] : 'light';
         $dir = isset( $_GET['search'] ) ? $_GET['search'] : './';
-        $browse = isset( $_GET['browser'] ) ? $_GET['browser']  : false;
+        $browse = isset( $_GET['browse'] ) ? $_GET['browse']  : false;
         $removeex = isset( $_GET['removeex'] ) ? $_GET['removeex'] : false;
+        $delete = isset( $_GET['delete'] ) ? $_GET['delete'] : false;
+        $create = isset( $_GET['create'] ) ? $_GET['create'] : false;
+        $content = isset( $_GET['content'] ) ? $_GET['content'] : false;
         $tmp = '';
 
         echo "
             <script>
-                let file_list = []
-                let folder_list = []
-                let mode = '$mode'
-                let program_name = '$program_name'
-                let dir = '$dir'
+                let file_list                  = []
+                let delete_file_list           = []
+                let deleted_files              = []
+                let deleted_files_number_lines = []
+                let folder_list                = []
+                let file_lines                 = []
+                let theme                      = '$theme'
+                let program_name               = '$program_name'
+                let dir                        = '$dir'
             </script>
         ";
     ?>
@@ -30,6 +37,8 @@
             --btn-focus-box-shadow: 0px 0px 0px 3px rgba(17, 88, 199, .4);
 
             --txb-background-color: #fafbfc;
+            --txb-focus-border-color: #0366d6;
+            --txb-border-color: #d9dadc;
 
             --first-btn-font-color: #24292e;
             --first-btn-background-color: #fafbfc;
@@ -57,7 +66,7 @@
         }
 
         <?php
-            if ($mode == 'darkness') {
+            if ($theme == 'darkness') {
                 echo "
                 :root {
                     --background-color: #06090f;
@@ -66,6 +75,8 @@
                     --btn-focus-box-shadow: 0px 0px 0px 3px rgba(17, 88, 199, .4);
 
                     --txb-background-color: #0d1117;
+                    --txb-focus-border-color: #388bfd;
+                    --txb-border-color: #21262d;
 
                     --first-btn-font-color: #c9d1d9;
                     --first-btn-background-color: #21262d;
@@ -117,14 +128,46 @@
             'Segoe UI Emoji';
         }
 
-        body div#initial {
+        /* Iframe delete files */
+        body iframe#iframe-file-functions {
+            display: none;
+        }
+
+        /* Popup recreate deleted file */
+        body div#popup-recreate-file {
+            position: relative;
+            transition: all 3s ease-in;
+            display: none;
+            margin: 6px;
+        }
+
+        body div#popup-recreate-file div.content {
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--first-font-color);
+            background-color: var(--form-background-color);
+            border: 1px solid var(--form-border-color);
+            align-items: center;
+            display: flex;
+            padding-left: 20px;
+            width: 300px;
+            height: 30px;
+        }
+
+        body div#popup-recreate-file div p {
+            margin: 0px;
+        }
+
+        /* Initial */
+        body div#initial,
+        body div#info-item {
             max-width: 500px;
             width: 90%;
             height: auto;
             min-height: 340px;
             display: block;
             position: relative;
-            margin: 50px auto 50px auto;
+            margin: 50px auto 10px auto;
             background-color: var(--form-background-color);
             color: var(--first-font-color);
             text-align: center;
@@ -183,6 +226,9 @@
             background-color: var(--first-btn-hover-background-color);
             border: 1px solid var(--first-btn-hover-border-color);
         }
+        body div#initial div#buttons a.item:hover ~ svg {
+            display: inline-block;
+        }
         body div#initial div#buttons a.item:active {
             background-color: var(--first-btn-active-background-color);
         }
@@ -192,6 +238,22 @@
             color: var(--first-btn-hover-font-color);
             background-color: var(--first-btn-hover-background-color);
             border: 1px solid var(--first-btn-hover-border-color);
+        }
+        body div#initial div#buttons div.btn-file-division {
+            position: relative;
+        }
+        body div#initial div#buttons div.btn-file-division svg {
+            width: 16px;
+            top: 5px;
+            margin-left: 36%;
+            cursor: pointer;
+            position: absolute;
+            fill: var(--first-font-color);
+            display: none;
+        }
+        body div#initial div#buttons div.btn-file-division svg:hover,
+        body div#initial div#buttons div.btn-file-division svg:hover ~ svg {
+            display: inline-block;
         }
 
         body div#initial div#buttons a.item.btn-folder {
@@ -213,6 +275,11 @@
             border: 1px solid var(--second-btn-hover-border-color);
             background-color: var(--second-btn-hover-background-color);
             
+        }
+
+        body div#initial div#buttons a.deleted-item,
+        body div#initial div#buttons svg.deleted-item {
+            display: none !important;
         }
 
         /* header */
@@ -250,7 +317,7 @@
         }
 
         body div#initial div#header input#txbSearch {
-            border: 1px solid var(--first-btn-background-color);
+            border: 1px solid var(--txb-border-color);
             border-radius: 4px;
             width: 60%;
             height: 20px;
@@ -262,8 +329,23 @@
             display: inline-block;
         }
         body div#initial div#header input#txbSearch:focus {
-            border: 1px solid var(--second-btn-hover-border-color);
+            border: 1px solid var(--txb-focus-border-color);
         }
+
+        /* Info Item */
+        body div#info-item {
+            margin: 10px auto 10px auto;
+            display: none;
+            padding: 20px 0px 20px 0px;
+            min-height: 0px;
+        }
+
+        body div#info-item line {
+            display: flex;
+            justify-content: space-around;
+        }
+        body div#info-item name { width: 180px; }
+        body div#info-item value { width: 180px; }
 
         /* Browser */
         body div#buttons {
@@ -291,6 +373,17 @@
             background-color: #fff;
         }
 
+        @media (max-width: 790px) {
+            body div#popup-recreate-file {
+                justify-content: center;
+            }
+
+            body div#popup-recreate-file div.content p {
+                width: 90%;
+                text-align: center;
+            }
+        }
+
     </style>
 
     <link rel='icon' href='https://icons.iconarchive.com/icons/papirus-team/papirus-mimetypes/256/app-x-php-icon.png'/>
@@ -302,6 +395,20 @@
         if ($browse != false) {
             goto createBrowser;
         }
+
+        if ($delete != false and file_exists($delete)) {
+            // unlink($delete);
+            goto end_program;
+        }
+
+        if ($create != false) {
+            echo $create. '=>'. str_replace('$this<-|->break-line', "\n", $content);
+            // $file = fopen($create, 'w');
+            // fwrite($file, $content);
+            // fclose($file);
+            goto end_program;
+        }
+
     ?>
 
     <div id='initial'>
@@ -310,7 +417,7 @@
             <div id='title'>
                 <svg class='top-buttons' onclick='javascript:history.go(-1)' viewBox='0 0 512 512'> <path d='M492,236H68.442l70.164-69.824c7.829-7.792,7.859-20.455,0.067-28.284c-7.792-7.83-20.456-7.859-28.285-0.068l-104.504,104c-0.007,0.006-0.012,0.013-0.018,0.019c-7.809,7.792-7.834,20.496-0.002,28.314c0.007,0.006,0.012,0.013,0.018,0.019l104.504,104c7.828,7.79,20.492,7.763,28.285-0.068c7.792-7.829,7.762-20.492-0.067-28.284L68.442,276H492c11.046,0,20-8.954,20-20C512,244.954,503.046,236,492,236z'/> </svg>
                 <h1>File list on server</h1>
-                <svg class='top-buttons' onclick='window.location.reload()' viewBox='0 0 458.186 458.186'><g transform='matrix(-1,0,0,1,458.1860580444336,0)'><g> <path d='M445.651,201.95c-1.485-9.308-10.235-15.649-19.543-14.164c-9.308,1.485-15.649,10.235-14.164,19.543c0.016,0.102,0.033,0.203,0.051,0.304c17.38,102.311-51.47,199.339-153.781,216.719c-102.311,17.38-199.339-51.47-216.719-153.781S92.966,71.232,195.276,53.852c62.919-10.688,126.962,11.29,170.059,58.361l-75.605,25.19c-8.944,2.976-13.781,12.638-10.806,21.582c0.001,0.002,0.002,0.005,0.003,0.007c2.976,8.944,12.638,13.781,21.582,10.806c0.003-0.001,0.005-0.002,0.007-0.002l102.4-34.133c6.972-2.322,11.675-8.847,11.674-16.196v-102.4C414.59,7.641,406.949,0,397.523,0s-17.067,7.641-17.067,17.067v62.344C292.564-4.185,153.545-0.702,69.949,87.19s-80.114,226.911,7.779,310.508s226.911,80.114,310.508-7.779C435.905,339.799,457.179,270.152,445.651,201.95z'/> </g> </svg>
+                <svg class='top-buttons' onclick='window.location.reload()' viewBox='0 0 458.186 458.186'> <g transform='matrix(-1,0,0,1,458.1860580444336,0)'> <path d='M445.651,201.95c-1.485-9.308-10.235-15.649-19.543-14.164c-9.308,1.485-15.649,10.235-14.164,19.543c0.016,0.102,0.033,0.203,0.051,0.304c17.38,102.311-51.47,199.339-153.781,216.719c-102.311,17.38-199.339-51.47-216.719-153.781S92.966,71.232,195.276,53.852c62.919-10.688,126.962,11.29,170.059,58.361l-75.605,25.19c-8.944,2.976-13.781,12.638-10.806,21.582c0.001,0.002,0.002,0.005,0.003,0.007c2.976,8.944,12.638,13.781,21.582,10.806c0.003-0.001,0.005-0.002,0.007-0.002l102.4-34.133c6.972-2.322,11.675-8.847,11.674-16.196v-102.4C414.59,7.641,406.949,0,397.523,0s-17.067,7.641-17.067,17.067v62.344C292.564-4.185,153.545-0.702,69.949,87.19s-80.114,226.911,7.779,310.508s226.911,80.114,310.508-7.779C435.905,339.799,457.179,270.152,445.651,201.95z'/> </svg>
             </div>
 
             <input type='text' id='txbSearch'/>
@@ -326,7 +433,7 @@
                     if ( $folder != '.' and $folder != '..' and is_dir($dir. '/'. $folder) )
                     {
                         $tmp = strtolower(str_replace(' ', '-', $folder));
-                        echo "<a href='http://localhost:8080/$program_name?search=$dir/$folder&mode=$mode' class='item $tmp btn-folder'>$folder</a>";
+                        echo "<a href='http://localhost:8080/$program_name?search=$dir/$folder&theme=$theme' class='item $tmp btn-folder'>$folder</a>";
                         echo "
                         <script>
                             folder_list.push('$tmp')
@@ -340,16 +447,43 @@
                     if ( $file != '.' and $file != '..' and is_file($dir. '/'. $file))
                     {
                         $tmp = strtolower(str_replace(' ', '-', $file));
+                        $lines = ArrayToString(file($dir . '/'. $file));
                         if ($removeex) { $file = substr($file, 0, -strlen(pathinfo($file, PATHINFO_EXTENSION)) - 1); }
-                        echo "<a href='http://localhost:8080/$program_name?mode=$mode&browser=http://localhost:8080/$dir/$file' class='item $tmp'>$file</a>";
+                        echo "
+                        <div class='btn-file-division'>
+                            <a href='http://localhost:8080/$program_name?theme=$theme&browse=http://localhost:8080/$dir/$file' class='item $tmp'>$file</a>
+
+                            <svg viewBox='-47 0 512 512' class='btn-delete-file delete-$tmp'>
+                                <path class='btn-delete-file delete-$tmp' d='m416.875 114.441406-11.304688-33.886718c-4.304687-12.90625-16.339843-21.578126-29.941406-21.578126h-95.011718v-30.933593c0-15.460938-12.570313-28.042969-28.027344-28.042969h-87.007813c-15.453125 0-28.027343 12.582031-28.027343 28.042969v30.933593h-95.007813c-13.605469 0-25.640625 8.671876-29.945313 21.578126l-11.304687 33.886718c-2.574219 7.714844-1.2695312 16.257813 3.484375 22.855469 4.753906 6.597656 12.445312 10.539063 20.578125 10.539063h11.816406l26.007813 321.605468c1.933594 23.863282 22.183594 42.558594 46.109375 42.558594h204.863281c23.921875 0 44.175781-18.695312 46.105469-42.5625l26.007812-321.601562h6.542969c8.132812 0 15.824219-3.941407 20.578125-10.535157 4.753906-6.597656 6.058594-15.144531 3.484375-22.859375zm-249.320312-84.441406h83.0625v28.976562h-83.0625zm162.804687 437.019531c-.679687 8.402344-7.796875 14.980469-16.203125 14.980469h-204.863281c-8.40625 0-15.523438-6.578125-16.203125-14.980469l-25.816406-319.183593h288.898437zm-298.566406-349.183593 9.269531-27.789063c.210938-.640625.808594-1.070313 1.484375-1.070313h333.082031c.675782 0 1.269532.429688 1.484375 1.070313l9.269531 27.789063zm0 0'/>
+                                <path class='btn-delete-file delete-$tmp' d='m282.515625 465.957031c.265625.015625.527344.019531.792969.019531 7.925781 0 14.550781-6.210937 14.964844-14.21875l14.085937-270.398437c.429687-8.273437-5.929687-15.332031-14.199219-15.761719-8.292968-.441406-15.328125 5.925782-15.761718 14.199219l-14.082032 270.398437c-.429687 8.273438 5.925782 15.332032 14.199219 15.761719zm0 0'/>
+                                <path class='btn-delete-file delete-$tmp' d='m120.566406 451.792969c.4375 7.996093 7.054688 14.183593 14.964844 14.183593.273438 0 .554688-.007812.832031-.023437 8.269531-.449219 14.609375-7.519531 14.160157-15.792969l-14.753907-270.398437c-.449219-8.273438-7.519531-14.613281-15.792969-14.160157-8.269531.449219-14.609374 7.519532-14.160156 15.792969zm0 0'/>
+                                <path class='btn-delete-file delete-$tmp' d='m209.253906 465.976562c8.285156 0 15-6.714843 15-15v-270.398437c0-8.285156-6.714844-15-15-15s-15 6.714844-15 15v270.398437c0 8.285157 6.714844 15 15 15zm0 0'/>
+                            </svg>
+                        </div>";
+
                         echo "
                         <script>
                             file_list.push('$tmp')
+                            delete_file_list.push('delete-$tmp')
+                            file_lines.push('$lines')
                         </script>";
                     }
                 }
                 $directory -> close();
 
+                function ArrayToString($array) {
+                    $newString = '';
+                    for ($x = 0; $x < count($array); ++$x) {
+                        $newString = $newString. trim(
+                            str_replace('<', '&#60;',
+                            str_replace('>', '&#62;',
+                            str_replace('\'', '&quot;',
+                            str_replace('"', '&apos;',
+                            $array[$x] ) ) ) ) );
+                    }
+
+                    return $newString;
+                }
             ?>
 
         </div>
@@ -469,6 +603,97 @@
 
     </div>
 
+    <div id='info-item'>
+        
+    </div>
+
+    <iframe src='' frameborder='0' id='iframe-file-functions'></iframe>
+
+    <div id='popup-recreate-file'>
+        <div class='content'>
+            <p>Recriar arquivo apagado</p>
+        </div>
+    </div>
+
+    <script>
+        const $popup_recreate_file = document.getElementById        ('popup-recreate-file'  )
+        const $iframe_delete_files = document.getElementById        ('iframe-file-functions')
+        const $btn_info_file       = document.getElementsByClassName('btn-info-file'        )
+        const $info_item           = document.getElementById        ('info-item'            )
+
+        for (let x = 0; x < delete_file_list.length; x++)
+        {
+            let _tmp = document.getElementsByClassName( delete_file_list[x] )
+
+            _tmp[0].addEventListener('click', event => {
+                _element_class = event.path[0].className.baseVal.split(' ')[1].substring(7)
+
+                _element = document.getElementsByClassName( file_list[findArrayItem(file_list, _element_class)] )[0]
+                _element_remove = document.getElementsByClassName( 'delete-' + file_list[findArrayItem(file_list, _element_class)] )[0]
+
+                deleted_files.push( _element.text )
+                deleted_files_number_lines.push( findArrayItem(file_list, _element_class) )
+
+                $iframe_delete_files.src = 'http://localhost:8080/' + program_name + '?delete=' + _element.text
+
+                _element.className = 'deleted-item'
+                _element_remove.className.baseVal = 'deleted-item'
+
+                file_list = removeArrayItem( file_list, file_list[findArrayItem(file_list, _element_class)] )
+                delete_file_list = removeArrayItem( delete_file_list, delete_file_list[findArrayItem(file_list, _element_class)] )
+
+                $popup_recreate_file.style.display = 'flex'
+                setInterval(() => {
+                    $popup_recreate_file.style.display = 'none'
+                    deleted_files = removeArrayItem(deleted_files, deleted_files[deleted_files.length - 1])
+                }, 90000)
+            })
+        }
+
+        $popup_recreate_file.addEventListener('click', () => {
+            _tmp = file_lines[deleted_files_number_lines[deleted_files_number_lines.length - 1]].
+            replaceAll('#', '%23').
+            replaceAll(' ', '%20').
+            replaceAll('&', '%26').
+            replaceAll('`', '%60').
+            replaceAll('+', '%2B').
+            replaceAll('&#60;', '%3C').
+            replaceAll('&#62;', '%3E').
+            replaceAll('&quot;', '%27').
+            replaceAll('&apos;', '%27')
+
+            console.log( _tmp )
+
+            $iframe_delete_files.src = 'http://localhost:8080/' + program_name + '?create=' + deleted_files[deleted_files.length - 1] + '&content=' + _tmp
+            console.log( deleted_files_number_lines[deleted_files_number_lines.length - 1] )
+            deleted_files_number_lines.pop()
+            deleted_files.pop()
+
+            if (deleted_files.length < 0) {
+                $popup_recreate_file.style.display = 'none'
+            }
+        })
+
+        function removeArrayItem($array, _item) {
+            _newArray = []
+            for (let x = 0; x < $array.length; x++) {
+                if ($array[x] != _item) {
+                    _newArray.push($array[x])
+                }
+            }
+
+            return _newArray
+        }
+
+        function findArrayItem($array, _item) {
+            for (x = 0; x < $array.length; x++) {
+                if ($array[x] == _item) { return x }
+            }
+            return -1
+        }
+
+    </script>
+
     <?php
         createBrowser:
 
@@ -483,6 +708,8 @@
             ";
                 
         }
+
+        end_program:
     ?>
 </body>
 </html>

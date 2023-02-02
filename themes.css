@@ -1,0 +1,49 @@
+
+:root.red {
+    --background-color: #ecf0f1;
+    --scrollbar-thumb-background-color: rgba(17, 88, 199, 1);
+    --selection-background-color: #58a6ff;
+
+    --btn-focus-box-shadow: 0px 0px 0px 3px #e74c3c;
+
+    --txb-background-color: #fafbfc;
+    --txb-focus-border-color: #e74c3c;
+    --txb-border-color: #d9dadc;
+    --txb-placeholder-color: #d9dadc;
+
+    --first-btn-font-color: #24292e;
+    --first-btn-background-color: #e74c3c;
+    --first-btn-border-color: #c0392b;
+    --first-btn-hover-font-color: #24292e;
+    --first-btn-hover-background-color: #c0392b;
+    --first-btn-hover-border-color: #c0392b;
+    --first-btn-active-background-color: #edeff2;
+
+    --second-btn-font-color: #fadbdc;
+    --second-btn-background-color: #c0392b;
+    --second-btn-border-color: #e74c3c;
+    --second-btn-hover-font-color: #fff;
+    --second-btn-hover-background-color: #e74c3c;
+    --second-btn-hover-border-color: #c0392b;
+    --second-btn-active-background-color: #e74c3c;
+
+    --error-message-fill: #d9dadc;
+
+    --first-font-color: #24292e;
+    --second-font-color: #fff;
+    --form-background-color: #fff;
+    --form-border-color: #e1e4e8;
+}
+
+:root.orange {
+    --background-color: orange;
+
+    --btn-focus-box-shadow: 0px 0px 0px 3px rgba(243, 156, 18, .8);
+
+    --first-btn-hover-border-color: #f39c12;
+
+    --second-btn-font-color: orange;
+    --second-btn-hover-background-color: orange;
+    --second-btn-hover-border-color: #f39c12;
+    --second-btn-active-background-color: #f39c12;
+}

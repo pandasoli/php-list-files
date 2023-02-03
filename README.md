@@ -117,3 +117,30 @@ If you are interested here's all the variables that you can change:
     If you made a nice theme, pleaseeee make a pull request and I'll add it built-in.
   </div>
 </details>
+
+<br/>
+<div align='center'>
+
+## Dev notes
+In this repo I used a `Node.js` package to force me to use [Conventional Commits](https://conventionalcommits.org).  
+To start the environment run:
+
+</div>
+
+```bash
+  pnpm i
+  # or
+  npm i
+  # or
+  yarn
+```
+<div align='center'>
+And maybe you also have to run:
+</div>
+
+```bash
+  npx husky install
+```
+<div align='center'>
+But I'm not sure.
+</div>

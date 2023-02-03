@@ -1,12 +1,17 @@
 <div align='center'>
 
 # List all files in PHP server
-You can open and browse files, update and return folders.  
+Jump between folders and files faster 😇🐘  
 It has a look inspired by GitHub.
+
+> I was tired of having to select one file after another while  
+taking my PHP classes so I created that.  
+Please, do not see the code of the old versions -.- I was still learning.  
+My English was sooo bad that time 🤭
 
 <br/>
 
-The mais file is the `index.php`.
+The main file is the `index.php`.
 
 <br/>
 

@@ -1,35 +1,27 @@
 <div align='center'>
 
-# List all files in PHP server
-Jump between folders and files faster 😇🐘  
-It has a look inspired by GitHub.
+# List all PHP files
 
-> I was tired of having to select one file after another while  
-taking my PHP classes so I created that.  
-Please, do not see the code of the old versions -.- I was still learning.  
-My English was sooo bad that time 🤭
+I was tired of having to select one file after another while doing<br/>
+my PHP classes so I created this project.
 
-<br/>
-
-The main file is the `index.php`.
+Please, don't read the code of old versions I was learning English that time.
 
 <br/>
 
 ## It can receive these props:
 </div>
 
-- `q` this expects a path to a folder or a file;
-- `styles` this expects a path to a css file;
-- `theme` this expects a theme name.
+- `q` expects a path to a folder or a file
+- `styles` expects a path to a css file
+- `theme` expects a theme name
 
 <br/>
 <div align='center'>
 
 ## Themes
-`Themes` are styles that change everything in the user interface.  
-They are inside the css file you pass.
-
 Its format is like this:
+
 </div>
 
 ```css
@@ -47,8 +39,10 @@ Its format is like this:
   }
 ```
 <div align='center'>
+
 There are two built-in themes, `light` and` dark`, with `light` being the default.  
 If you are interested here's all the variables that you can change:
+
 </div>
 
 <details>
@@ -127,25 +121,19 @@ If you are interested here's all the variables that you can change:
 <div align='center'>
 
 ## Dev notes
-In this repo I used a `Node.js` package to force me to use [Conventional Commits](https://conventionalcommits.org).  
+In this repo I used a `Node.js` package to force myself to use [Conventional Commits](https://conventionalcommits.org).  
 To start the environment run:
 
 </div>
 
 ```bash
-  pnpm i
-  # or
-  npm i
-  # or
-  yarn
+npm i
 ```
+
 <div align='center'>
-And maybe you also have to run:
+I'm not sure, but maybe you also have to run:
 </div>
 
 ```bash
-  npx husky install
+npx husky install
 ```
-<div align='center'>
-But I'm not sure.
-</div>
